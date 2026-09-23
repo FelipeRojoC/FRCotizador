@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Cuéntame de tu idea — FRC</title>
+<meta name="description" content="Formulario guiado para entender la idea de tu página web. Pensado para talleres mecánicos: sin tecnicismos, con ejemplos y una vista previa en vivo." />
+<meta name="theme-color" content="#17161d" />
+<meta name="color-scheme" content="dark light" />
+<script>(function(){try{var t=localStorage.getItem("frc-theme");if(!t)t=window.matchMedia&&window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";document.documentElement.setAttribute("data-theme",t);}catch(e){document.documentElement.setAttribute("data-theme","dark");}})();</script>
+<meta property="og:title" content="Cuéntame de tu idea — FRC" />
+<meta property="og:description" content="Formulario guiado para diseñar la página web de tu taller mecánico." />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%238b5cf6'/><text x='50' y='70' font-size='52' font-family='sans-serif' font-weight='700' fill='white' text-anchor='middle'>FRC</text></svg>" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <div class="brand">
+      <span class="brand-mark">FRC</span>
+      <span class="brand-txt">
+        <strong>Cuéntame de tu idea</strong>
+        <small>FRC · Formulario para diseñar tu página web</small>
+      </span>
+    </div>
+    <div class="topbar-actions">
+      <button class="theme-btn" id="btnTheme" type="button" title="Cambiar entre modo claro y oscuro" aria-label="Cambiar tema">🌙</button>
+      <button class="btn ghost sm" id="btnGlosario" type="button">¿Qué significa cada palabra?</button>
+      <button class="btn ghost sm only-desk" id="btnReset" type="button">Empezar de nuevo</button>
+    </div>
+  </div>
+  <div class="progress"><div class="progress-fill" id="progressFill"></div></div>
+  <nav class="steps-nav" id="stepsNav" aria-label="Pasos del formulario"></nav>
+</header>
+
+<main class="layout">
+
+  <!-- ====== COLUMNA FORMULARIO ====== -->
+  <section class="col-form" id="colForm">
+    <div class="intro" id="intro">
+      <span class="eyebrow">FRC · Tómate 8 minutos</span>
+      <h1>Cuéntame de tu idea</h1>
+      <p>No necesitas saber nada de páginas web. Te voy a ir preguntando cosas de tu taller en palabras simples, con ejemplos y dibujos. <strong>Mientras respondes, al lado se va armando el plano de tu página</strong> para que veas cómo quedaría.</p>
+      <div class="intro-badges">
+        <span class="ibadge">🔧 Hecho para talleres</span>
+        <span class="ibadge">👀 Vista previa en vivo</span>
+        <span class="ibadge">📧 Al final me llega a mi correo</span>
+        <span class="ibadge">🌙 Modo claro y oscuro</span>
+      </div>
+      <button class="btn primary lg" id="btnStart" type="button">Empecemos →</button>
+      <p class="tiny">Tus respuestas se guardan en tu propio navegador. Puedes cerrar y seguir después.</p>
+    </div>
+
+    <form id="form" class="wizard hidden" autocomplete="on" novalidate>
+      <div id="stepsHost"></div>
+
+      <div class="wizard-foot">
+        <button class="btn ghost" id="btnPrev" type="button">← Atrás</button>
+        <span class="foot-info" id="footInfo"></span>
+        <button class="btn primary" id="btnNext" type="button">Siguiente →</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- ====== COLUMNA VISTA PREVIA ====== -->
+  <aside class="col-preview" id="colPreview">
+    <div class="preview-head">
+      <div>
+        <strong>El plano de tu página</strong>
+        <small>Se va armando con lo que respondes</small>
+      </div>
+      <button class="btn ghost sm only-mob" id="btnClosePrev" type="button">Cerrar</button>
+    </div>
+    <div class="preview-scroll">
+      <div class="mock" id="mock"></div>
+      <p class="preview-note">Esto es solo un boceto para entendernos. El diseño final se trabaja aparte.</p>
+    </div>
+  </aside>
+</main>
+
+<button class="fab only-mob" id="btnOpenPrev" type="button">👀 Ver mi página</button>
+
+<!-- ====== GLOSARIO ====== -->
+<div class="modal" id="modalGlosario" hidden>
+  <div class="modal-card">
+    <div class="modal-head">
+      <h2>¿Qué significa cada palabra?</h2>
+      <button class="icon-btn" data-close type="button" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="modal-body" id="glosarioBody"></div>
+  </div>
+</div>
+
+<!-- ====== MODAL ENVIO ====== -->
+<div class="modal" id="modalEnvio" hidden>
+  <div class="modal-card">
+    <div class="modal-head">
+      <h2 id="envioTitle">Enviando tu información…</h2>
+      <button class="icon-btn" data-close type="button" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="modal-body" id="envioBody"></div>
+  </div>
+</div>
+
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>
