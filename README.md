@@ -75,7 +75,7 @@ Todo lo editable está arriba de `assets/data.js`:
 const CONFIG = {
   email: "felipe.rojo@alumnos.ucn.cl", // dónde llegan los formularios
   whatsapp: "56976728541",               // sin + ni espacios
-  urlPublica: "https://feliperojoc.github.io/FRCotizador/", // para el link del diseño
+  urlPublica: "https://frcotizador.vercel.app/", // para el link del diseño
   autor: "Felipe Rojo",
   asunto: "Nuevo brief de página web — Taller"
 };
@@ -92,14 +92,14 @@ presupuesto (`PRESUPUESTOS`) y el glosario.
 
 ## Publicar
 
-### GitHub Pages
-1. En el repo → **Settings → Pages**.
-2. *Source*: **Deploy from a branch** → rama `main`, carpeta `/ (root)`.
-3. Queda en `https://feliperojoc.github.io/FRCotizador/`.
+Está publicada en **https://frcotizador.vercel.app** (Vercel, conectado a este repo: cada push a
+`main` la actualiza sola).
 
-### Otra opción
-Arrastrar la carpeta a [Netlify Drop](https://app.netlify.com/drop) o subirla a cualquier hosting.
-Son archivos estáticos: funciona en cualquier parte.
+Si cambia la dirección, hay que actualizar `CONFIG.urlPublica` en `assets/data.js`, porque de ahí
+sale el link `🖼️ VER EL DISEÑO` que va en el correo.
+
+También sirve cualquier otro hosting estático (GitHub Pages, Netlify Drop): son 4 archivos sin
+build ni servidor.
 
 ### Probar en local
 ```bash

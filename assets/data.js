@@ -15,7 +15,7 @@ const CONFIG = {
   /* Dónde queda publicada esta página. Se usa para armar el link
      "VER EL DISEÑO" que va en el correo. Si lo dejas vacío, se arma
      con la dirección desde donde se abrió el formulario. */
-  urlPublica: "https://feliperojoc.github.io/FRCotizador/"
+  urlPublica: "https://frcotizador.vercel.app/"
 };
 
 /* ---------- PASO 7: rangos de presupuesto ---------- */
