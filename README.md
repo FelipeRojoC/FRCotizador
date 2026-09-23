@@ -20,7 +20,7 @@ y una **vista previa en vivo** que va armando el boceto del sitio mientras el cl
 | 4. Secciones | Los bloques del sitio, cada uno explicado y con ejemplo; servicios, precios, marcas y reseñas abren un campo para escribirlos |
 | 5. Estilo | 8 estilos que muestran el nombre del taller aplicado, colores que le gustan y que no, páginas de referencia |
 | 6. Material | Logo, fotos, textos, precios, reseñas → "Lo tengo" / "Necesito ayuda" / "No aplica" |
-| 7. Detalles | Dominio, correo corporativo, funciones extra, quién actualiza, plazo y presupuesto |
+| 7. Detalles | Dominio, correo corporativo, funciones extra, quién actualiza, plazo y presupuesto (rangos desde $50.000) |
 
 Además:
 
@@ -49,9 +49,21 @@ Correo configurado: **felipe.rojo@alumnos.ucn.cl** (en `assets/data.js` → `CON
 >
 > Conviene hacer el primer envío tú mismo apenas esté publicado, para dejarlo activado.
 
-El correo llega como una tabla con secciones (`🏭 TALLER`, `📐 TIPO DE PÁGINA`, `🎨 ESTILO`…),
-el resumen completo en texto y, cuando el servicio lo permite, el **brief visual adjunto** como archivo HTML.
-Si el envío falla, la pantalla ofrece copiar el resumen, descargar el brief o abrir el correo ya redactado.
+El correo llega como una tabla con secciones (`🏭 TALLER`, `📐 TIPO DE PÁGINA`, `🎨 ESTILO`…) y el
+resumen completo en texto.
+
+**El diseño viaja como link, no como adjunto.** Arriba del resumen va el campo
+`🖼️ VER EL DISEÑO`: un link a esta misma página con todas las respuestas codificadas en la
+dirección (`?b=…`). Al abrirlo se dibuja el brief visual completo — boceto de la página incluido —
+y trae un botón para guardarlo como HTML. Se hace así porque los adjuntos no son confiables en el
+plan gratuito de FormSubmit; el archivo se intenta adjuntar igual, pero el link siempre funciona.
+
+Para que el link apunte al lugar correcto está `CONFIG.urlPublica`. Si se deja vacío, se arma con
+la dirección desde donde se abrió el formulario.
+
+FormSubmit responde HTTP 200 aunque no haya enviado nada, así que el resultado real se lee del
+campo `success` del JSON. Si el envío no sale, la pantalla ofrece WhatsApp, el correo ya redactado,
+copiar el resumen y descargar el brief.
 
 ---
 
@@ -63,6 +75,7 @@ Todo lo editable está arriba de `assets/data.js`:
 const CONFIG = {
   email: "felipe.rojo@alumnos.ucn.cl", // dónde llegan los formularios
   whatsapp: "56976728541",               // sin + ni espacios
+  urlPublica: "https://feliperojoc.github.io/FRCotizador/", // para el link del diseño
   autor: "Felipe Rojo",
   asunto: "Nuevo brief de página web — Taller"
 };
@@ -72,7 +85,8 @@ Con el WhatsApp configurado, el resumen ofrece además un botón verde que abre 
 con todo el texto ya escrito.
 
 En el mismo archivo se editan sin tocar código: especialidades, vehículos, servicios extra,
-tipos de página, objetivos, secciones, estilos, colores, material, funciones extra y el glosario.
+tipos de página, objetivos, secciones, estilos, colores, material, funciones extra, los rangos de
+presupuesto (`PRESUPUESTOS`) y el glosario.
 
 ---
 

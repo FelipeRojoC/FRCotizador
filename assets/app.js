@@ -385,13 +385,9 @@
         </div>
       </div>
       <div class="field">
-        <label>Presupuesto aproximado <span class="sub">Opcional, pero ayuda a proponerte algo realista</span></label>
+        <label>Presupuesto aproximado <span class="sub">Opcional. Los proyectos parten en $50.000 y suben según lo que lleve la página</span></label>
         <div class="chips">
-          ${r("presupuesto", "a", "Hasta $200.000")}
-          ${r("presupuesto", "b", "$200.000 a $400.000")}
-          ${r("presupuesto", "c", "$400.000 a $700.000")}
-          ${r("presupuesto", "d", "Más de $700.000")}
-          ${r("presupuesto", "e", "Prefiero que me propongas")}
+          ${PRESUPUESTOS.map(pr => r("presupuesto", pr.id, pr.txt)).join("")}
         </div>
       </div>
       <div class="field">
@@ -413,7 +409,7 @@
     dominio: { si: "Ya tiene dominio", no: "Necesita dominio", nose: "No sabe qué es" },
     quienActualiza: { yo: "Él mismo (quiere panel de edición)", tu: "Prefiere que lo haga yo", poco: "Casi no va a cambiar", nose: "No lo tiene claro" },
     plazo: { urgente: "Lo antes posible", mes: "Dentro de un mes", "2-3": "En 2 o 3 meses", sinapuro: "Sin apuro" },
-    presupuesto: { a: "Hasta $200.000", b: "$200.000 a $400.000", c: "$400.000 a $700.000", d: "Más de $700.000", e: "Prefiere una propuesta" }
+    presupuesto: PRESUPUESTOS.reduce((acc, p) => { acc[p.id] = p.txt; return acc; }, {})
   };
 
   function dirTxt() {
@@ -858,6 +854,43 @@
     $("#modalGlosario").hidden = false;
   }
 
+  /* ---------------- Link al diseño (brief en la web) ---------------- */
+  function compacto(obj) {
+    /* Deja fuera lo vacío para que el link no se haga eterno */
+    const out = {};
+    Object.keys(obj).forEach(k => {
+      const v = obj[k];
+      if (v == null || v === "") return;
+      if (Array.isArray(v)) {
+        const arr = v.filter(x => (typeof x === "object" ? Object.keys(compacto(x)).length : nz(x)));
+        if (arr.length) out[k] = arr.map(x => (typeof x === "object" ? compacto(x) : x));
+        return;
+      }
+      if (typeof v === "object") {
+        const sub = compacto(v);
+        if (Object.keys(sub).length) out[k] = sub;
+        return;
+      }
+      out[k] = v;
+    });
+    return out;
+  }
+  function b64e(txt) {
+    const bytes = new TextEncoder().encode(txt);
+    let bin = ""; bytes.forEach(b => { bin += String.fromCharCode(b); });
+    return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  }
+  function b64d(txt) {
+    const bin = atob(txt.replace(/-/g, "+").replace(/_/g, "/"));
+    return new TextDecoder().decode(Uint8Array.from(bin, c => c.charCodeAt(0)));
+  }
+  function linkDiseno() {
+    const base = CONFIG.urlPublica || (location.origin + location.pathname);
+    try {
+      return base + (base.indexOf("?") >= 0 ? "&" : "?") + "b=" + b64e(JSON.stringify(compacto(S)));
+    } catch (e) { return ""; }
+  }
+
   /* ---------------- Texto / brief ---------------- */
   function resumenTexto() {
     let out = "BRIEF DE PAGINA WEB — " + (nz(S.nombre) || "Taller sin nombre") + "\n";
@@ -927,7 +960,20 @@ ${mockCSS()}
   }).join("")}
 </div>
 <div><div class="card"><h4>Boceto de la página</h4>${mock}</div></div>
-</div></div></body></html>`;
+</div>
+<button id="guardar" style="position:fixed;right:20px;bottom:20px;background:${TH.acc};color:#fff;border:0;border-radius:12px;padding:13px 20px;font:600 14px Inter,sans-serif;cursor:pointer;box-shadow:0 10px 26px ${TH.accRing}">⬇️ Guardar este brief</button>
+<script>
+document.getElementById("guardar").addEventListener("click", function () {
+  this.style.display = "none";
+  var html = "<!DOCTYPE html>" + document.documentElement.outerHTML;
+  this.style.display = "";
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([html], { type: "text/html" }));
+  a.download = ${JSON.stringify("brief-" + (nz(S.nombre) || "taller").toLowerCase().replace(/[^a-z0-9]+/g, "-") + ".html")};
+  a.click();
+});
+<\/script>
+</div></body></html>`;
   }
 
   function mockCSS() {
@@ -1036,6 +1082,8 @@ ${mockCSS()}
     f["⏱️ Plazo"] = MAP_TXT.plazo[S.plazo] || "";
     f["💰 Presupuesto"] = MAP_TXT.presupuesto[S.presupuesto] || "";
     f["💬 Comentarios"] = nz(S.comentarios);
+    const link = linkDiseno();
+    if (link) f["🖼️ VER EL DISEÑO (abre el brief visual)"] = link;
     f["📄 RESUMEN COMPLETO"] = resumenTexto();
     Object.keys(f).forEach(k => { if (!nz(f[k])) delete f[k]; });
     return f;
@@ -1109,6 +1157,32 @@ ${mockCSS()}
   }
 
   /* ---------------- Arranque ---------------- */
+
+  /* Si la dirección trae ?b=... venimos de un link del correo:
+     mostramos el brief visual en vez del formulario. */
+  const paramBrief = (function () {
+    try { return new URLSearchParams(location.search).get("b"); } catch (e) { return null; }
+  })();
+  if (paramBrief) {
+    let leido = false;
+    try { S = Object.assign(blank(), JSON.parse(b64d(paramBrief))); leido = true; } catch (e) {}
+    if (leido) {
+      drawPreview();
+      const html = briefHTML();
+      document.body.style.visibility = "hidden";
+      /* Esperamos a que termine de cargarse la página: document.open()
+         no borra nada mientras el navegador todavía está leyendo el HTML. */
+      setTimeout(function () { document.open(); document.write(html); document.close(); }, 0);
+      return;
+    }
+    modalEnvio("No se pudo abrir el brief", `
+      <div class="state">
+        <div class="big">🔗</div>
+        <h3>El link llegó cortado</h3>
+        <p>Algunos correos parten los links largos en dos. Cópialo completo desde el correo y pégalo en el navegador.</p>
+      </div>`);
+  }
+
   const tieneDatos = nz(S.nombre) || S.especialidades.length || S.tipo;
   if (tieneDatos) {
     $("#intro").classList.remove("hidden");

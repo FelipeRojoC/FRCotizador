@@ -11,8 +11,22 @@ const CONFIG = {
      Si lo dejas vacío, el botón de WhatsApp no aparece. */
   whatsapp: "56976728541",
   autor: "Felipe Rojo",
-  asunto: "Nuevo brief de página web — Taller"
+  asunto: "Nuevo brief de página web — Taller",
+  /* Dónde queda publicada esta página. Se usa para armar el link
+     "VER EL DISEÑO" que va en el correo. Si lo dejas vacío, se arma
+     con la dirección desde donde se abrió el formulario. */
+  urlPublica: "https://feliperojoc.github.io/FRCotizador/"
 };
+
+/* ---------- PASO 7: rangos de presupuesto ---------- */
+const PRESUPUESTOS = [
+  { id: "r50",  txt: "$50.000 a $100.000" },
+  { id: "r100", txt: "$100.000 a $200.000" },
+  { id: "r200", txt: "$200.000 a $300.000" },
+  { id: "r300", txt: "$300.000 a $500.000" },
+  { id: "r500", txt: "Más de $500.000" },
+  { id: "prop", txt: "Prefiero que me propongas" }
+];
 
 /* ---------- PASO 2: tipos de página ---------- */
 const PAGE_TYPES = [
