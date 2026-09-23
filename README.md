@@ -41,7 +41,7 @@ Además:
 El envío usa [FormSubmit](https://formsubmit.co) — un servicio gratuito que recibe el POST del
 formulario y lo reenvía por correo. No requiere backend ni cuenta.
 
-Correo configurado: **felipe.rojo@allumnos.ucn.cl** (en `assets/data.js` → `CONFIG.email`).
+Correo configurado: **felipe.rojo@alumnos.ucn.cl** (en `assets/data.js` → `CONFIG.email`).
 
 > ⚠️ **Activación única**: la **primera vez** que alguien envía el formulario, FormSubmit manda un
 > correo de confirmación a esa casilla con un botón *Activate Form*. Hay que apretarlo **una vez**.
@@ -61,14 +61,15 @@ Todo lo editable está arriba de `assets/data.js`:
 
 ```js
 const CONFIG = {
-  email: "felipe.rojo@allumnos.ucn.cl", // dónde llegan los formularios
-  whatsapp: "",                          // ej: "56912345678" (sin + ni espacios)
+  email: "felipe.rojo@alumnos.ucn.cl", // dónde llegan los formularios
+  whatsapp: "56976728541",               // sin + ni espacios
   autor: "Felipe Rojo",
   asunto: "Nuevo brief de página web — Taller"
 };
 ```
 
-Si pones tu WhatsApp, aparece un botón extra en el resumen para enviártelo por ahí.
+Con el WhatsApp configurado, el resumen ofrece además un botón verde que abre el chat
+con todo el texto ya escrito.
 
 En el mismo archivo se editan sin tocar código: especialidades, vehículos, servicios extra,
 tipos de página, objetivos, secciones, estilos, colores, material, funciones extra y el glosario.

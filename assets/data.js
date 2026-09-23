@@ -6,10 +6,10 @@
 const CONFIG = {
   /* Correo donde llegan los formularios. FormSubmit envía un
      correo de activación la PRIMERA vez que alguien envía el form. */
-  email: "felipe.rojo@allumnos.ucn.cl",
+  email: "felipe.rojo@alumnos.ucn.cl",
   /* WhatsApp en formato internacional sin + ni espacios. Ej: "56912345678".
      Si lo dejas vacío, el botón de WhatsApp no aparece. */
-  whatsapp: "",
+  whatsapp: "56976728541",
   autor: "Felipe Rojo",
   asunto: "Nuevo brief de página web — Taller"
 };

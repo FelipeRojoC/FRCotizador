@@ -966,9 +966,33 @@ ${mockCSS()}
     try { document.execCommand("copy"); done(); } catch (e) { alert("Copia manual:\n\n" + txt); }
     ta.remove();
   }
+  /* WhatsApp: versión corta, porque los links muy largos fallan en algunos celulares */
+  function resumenWsp() {
+    const L = [];
+    L.push("Hola " + CONFIG.autor + ", te dejo la info de mi taller para la página web:");
+    L.push("");
+    L.push("*" + (nz(S.nombre) || "Mi taller") + "*" + (nz(S.anios) ? " · " + nz(S.anios) : ""));
+    if (nz(S.nombreContacto)) L.push("Contacto: " + nz(S.nombreContacto) + (nz(S.tel) ? " · " + nz(S.tel) : ""));
+    if (dirTxt()) L.push("Dirección: " + dirTxt());
+    const esps = S.especialidades.concat(nz(S.otraEsp) ? [nz(S.otraEsp)] : []);
+    if (esps.length) L.push("Especialidades: " + esps.join(", "));
+    if (S.vehiculos.length) L.push("Vehículos: " + S.vehiculos.join(", "));
+    L.push("");
+    if (S.tipo) L.push("Tipo de página: " + pageTypeName(S.tipo));
+    if (S.objetivos.length) L.push("Objetivo: " + S.objetivos.map(objetivoTxt).join(" · "));
+    if (S.estilo) L.push("Estilo: " + estiloName(S.estilo));
+    if (S.coloresSi.length) L.push("Colores: " + colorNames(S.coloresSi).join(", "));
+    if (S.secciones.length) L.push("Secciones: " + S.secciones.map(seccionName).join(", "));
+    if (S.plazo) L.push("Plazo: " + (MAP_TXT.plazo[S.plazo] || ""));
+    if (S.presupuesto) L.push("Presupuesto: " + (MAP_TXT.presupuesto[S.presupuesto] || ""));
+    if (nz(S.comentarios)) { L.push(""); L.push("Comentario: " + nz(S.comentarios)); }
+    L.push("");
+    L.push("(El detalle completo te lo mandé también por el formulario)");
+    return L.join("\n");
+  }
   function abrirWsp() {
     if (!CONFIG.whatsapp) return;
-    window.open("https://wa.me/" + CONFIG.whatsapp + "?text=" + encodeURIComponent(resumenTexto()), "_blank");
+    window.open("https://wa.me/" + CONFIG.whatsapp + "?text=" + encodeURIComponent(resumenWsp()), "_blank");
   }
 
   /* ---------------- Envío ---------------- */
@@ -1069,6 +1093,7 @@ ${mockCSS()}
             <button class="btn ghost" type="button" id="btnCopiar">📋 Copiar el resumen</button>
             <button class="btn ghost" type="button" id="btnBrief">⬇️ Descargar el brief</button>
           </div>
+          ${CONFIG.whatsapp ? '<button class="btn green wide" type="button" id="btnWsp" style="margin-top:12px">💬 Mandármelo por WhatsApp</button>' : ""}
           <a class="btn primary wide" style="margin-top:12px" href="mailto:${esc(CONFIG.email)}?subject=${encodeURIComponent(CONFIG.asunto + ": " + nz(S.nombre))}&body=${encodeURIComponent(resumenTexto())}">📧 Abrir mi correo con todo escrito</a>
         </div>`);
     }
