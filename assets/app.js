@@ -1051,25 +1051,32 @@ ${mockCSS()}
     modalEnvio("Enviando…", `<div class="state"><div class="spinner"></div><h3>Mandando tu información</h3><p>Un segundo, estamos enviando todo a ${esc(CONFIG.autor)}.</p></div>`);
 
     const f = campos();
-    const fd = new FormData();
-    Object.keys(f).forEach(k => fd.append(k, f[k]));
-    fd.append("attachment", new Blob([briefHTML()], { type: "text/html" }),
-      "brief-" + (nz(S.nombre) || "taller").toLowerCase().replace(/[^a-z0-9]+/g, "-") + ".html");
-
     const url = "https://formsubmit.co/ajax/" + encodeURIComponent(CONFIG.email);
 
-    const post = (body) => fetch(url, { method: "POST", body: body, headers: { Accept: "application/json" } });
+    const armar = (conAdjunto) => {
+      const fd = new FormData();
+      Object.keys(f).forEach(k => fd.append(k, f[k]));
+      if (conAdjunto) {
+        fd.append("attachment", new Blob([briefHTML()], { type: "text/html" }),
+          "brief-" + (nz(S.nombre) || "taller").toLowerCase().replace(/[^a-z0-9]+/g, "-") + ".html");
+      }
+      return fd;
+    };
 
-    post(fd)
-      .then(r => { if (!r.ok) throw new Error("http " + r.status); return r.json(); })
+    /* FormSubmit responde 200 incluso cuando NO envía el correo:
+       hay que mirar el campo "success" del JSON, no solo el código HTTP. */
+    const intento = (fd) => fetch(url, { method: "POST", body: fd, headers: { Accept: "application/json" } })
+      .then(r => r.json().catch(() => ({ success: r.ok ? "true" : "false", message: "Respuesta inesperada del servidor" })))
+      .then(j => {
+        if (j && String(j.success).toLowerCase() === "false") {
+          const e = new Error("envio-rechazado"); e.info = j; throw e;
+        }
+        return j;
+      });
+
+    intento(armar(true))
       .then(ok)
-      .catch(() => {
-        // Reintento sin archivo adjunto
-        const fd2 = new FormData();
-        Object.keys(f).forEach(k => fd2.append(k, f[k]));
-        return post(fd2).then(r => { if (!r.ok) throw new Error("http " + r.status); return r.json(); }).then(ok);
-      })
-      .catch(fail);
+      .catch(() => intento(armar(false)).then(ok).catch(fail));
 
     function ok() {
       try { localStorage.removeItem(KEY); } catch (e) {}
@@ -1082,19 +1089,21 @@ ${mockCSS()}
           <button class="btn primary wide" type="button" id="btnBrief" style="margin-top:14px">⬇️ Descargar el brief visual</button>
         </div>`);
     }
-    function fail() {
+
+    function fail(err) {
+      const detalle = err && err.info && err.info.message ? String(err.info.message) : "";
       modalEnvio("No se pudo enviar", `
         <div class="state">
           <div class="big">📭</div>
-          <h3>El envío automático falló</h3>
-          <p>Puede ser la conexión. No perdiste nada: todas tus respuestas siguen guardadas.</p>
-          <div class="note">Manda el resumen por cualquiera de estas vías y listo. Mi correo es <strong>${esc(CONFIG.email)}</strong>.</div>
+          <h3>El envío automático no salió</h3>
+          <p>No perdiste nada: todas tus respuestas siguen guardadas. Mándamelo por acá y lo recibo igual.</p>
+          ${CONFIG.whatsapp ? '<button class="btn green wide" type="button" id="btnWsp" style="margin-top:14px">💬 Mandármelo por WhatsApp</button>' : ""}
+          <a class="btn primary wide" style="margin-top:12px" href="mailto:${esc(CONFIG.email)}?subject=${encodeURIComponent(CONFIG.asunto + ": " + nz(S.nombre))}&body=${encodeURIComponent(resumenTexto())}">📧 Abrir mi correo con todo escrito</a>
           <div class="send-actions">
             <button class="btn ghost" type="button" id="btnCopiar">📋 Copiar el resumen</button>
             <button class="btn ghost" type="button" id="btnBrief">⬇️ Descargar el brief</button>
           </div>
-          ${CONFIG.whatsapp ? '<button class="btn green wide" type="button" id="btnWsp" style="margin-top:12px">💬 Mandármelo por WhatsApp</button>' : ""}
-          <a class="btn primary wide" style="margin-top:12px" href="mailto:${esc(CONFIG.email)}?subject=${encodeURIComponent(CONFIG.asunto + ": " + nz(S.nombre))}&body=${encodeURIComponent(resumenTexto())}">📧 Abrir mi correo con todo escrito</a>
+          <div class="note">Mi correo es <strong>${esc(CONFIG.email)}</strong>${CONFIG.whatsapp ? " y mi WhatsApp el +" + esc(CONFIG.whatsapp) : ""}.${detalle ? '<br><span style="opacity:.7;font-size:12px">Detalle técnico: ' + esc(detalle) + "</span>" : ""}</div>
         </div>`);
     }
   }
